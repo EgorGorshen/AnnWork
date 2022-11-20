@@ -1,0 +1,7 @@
+.venv
+.env
+./db_after.json
+./db_before.json
+./db.json
+./db.png
+
