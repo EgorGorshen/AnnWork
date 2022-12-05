@@ -6,6 +6,11 @@ import os
 import analysis
 
 
+"""
+Бот для аналитики психологического теста.
+"""
+
+
 load_dotenv()
 bot = TeleBot(token=os.environ['TOKEN'])
 
