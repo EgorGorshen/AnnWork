@@ -67,19 +67,38 @@ def load(message: Message):
 
 
 def load_before(message: Message):
-    analysis.loading_db(message=message, bot=bot, type_db='before')
-    bot.send_message(
-        chat_id=message.chat.id,
-        text='Отправьте файл с опросом после консультации'
-    )
-    bot.register_next_step_handler(message, load_after)
+    try:
+        analysis.loading_db(message=message, bot=bot, type_db='before')
+        bot.send_message(
+            chat_id=message.chat.id,
+            text='Отправьте файл с опросом после консультации'
+        )
+        bot.register_next_step_handler(message, load_after)
+    except Exception as ex:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text='Извините произошла ошибка попробуйте загрузить файл заново.'
+        )
+        bot.send_message(
+            chat_id=os.getenv('ADMIN'),
+            text=ex.__str__()
+        )
 
 
 def load_after(message: Message):
-    analysis.loading_db(message=message, bot=bot, type_db='after')
-    bot.send_message(chat_id=message.chat.id, text='Файлы загружены, запустите команду /analytics для получения результата.')
-
-    analysis.analysis()
+    try:
+        analysis.loading_db(message=message, bot=bot, type_db='after')
+        bot.send_message(chat_id=message.chat.id, text='Файлы загружены, запустите команду /analytics для получения результата.')
+        analysis.analysis()
+    except Exception as ex:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text='Извините произошла ошибка попробуйте загрузить файлы заново. (/load)'
+        )
+        bot.send_message(
+            chat_id=os.getenv('ADMIN'),
+            text=ex.__str__()
+        )
 
 
 @bot.message_handler(commands=['analytics'])
@@ -109,7 +128,7 @@ def conclusion(message: Message):
 
 def print_admin(ex: Exception):
     bot.send_message(
-        chat_id=1256358382,
+        chat_id=os.getenv('ADMIN'),
         text=str(ex)
     )
 
